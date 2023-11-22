@@ -1,7 +1,11 @@
 package vn.edu.iuh.fit.week_06.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 @Entity
@@ -33,6 +37,4 @@ public class PostComment {
 
     @Column(columnDefinition = "TEXT")
     private String content;
-
-    // Constructors, getters, and setters
 }
