@@ -52,7 +52,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostComment> getCommentsByPostId(Long postId) {
-        return postCommentRepository.findPostCommentByPost(postId);
+        return postCommentRepository.findPostCommentByPost_Id(postId);
     }
 
     @Override
