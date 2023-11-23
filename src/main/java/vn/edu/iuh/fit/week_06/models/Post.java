@@ -47,6 +47,5 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // Constructors, getters, and setters
 }
 

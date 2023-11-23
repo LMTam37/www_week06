@@ -30,7 +30,12 @@ public class SecurityConfiguration {
                 .password("1")
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+        UserDetails admin = users
+                .username("user2")
+                .password("1")
+                .roles("USER")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
     }
 
     @Bean
