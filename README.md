@@ -8,7 +8,7 @@
 
 ## Home Page
 
-![HomePage](./src/main/resources/static/img/HomePage.png)
+![HomePage](./src/main/resources/static/img/homePage.png)
 
 - After successful login, users are navigated to the home page.
 - On the home page, users can view their wall, posts, and add new posts.
