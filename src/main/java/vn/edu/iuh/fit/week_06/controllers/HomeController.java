@@ -14,6 +14,7 @@ import vn.edu.iuh.fit.week_06.repositories.UserRepository;
 import vn.edu.iuh.fit.week_06.services.PostService;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class HomeController {
         int page = 0;
         int size = 5;
 
-        List<Post> allPosts = postService.getAllPosts(page, size);
+        List<Post> allPosts = postService.getAllPosts();
 
         Page<Post> postPage = getPage(allPosts, page, size);
 
@@ -58,20 +59,27 @@ public class HomeController {
     public String getPostsPaging(@PathVariable int pageNumber, Model model) {
         int size = 5;
 
-        List<Post> allPosts = postService.getAllPosts(pageNumber, size);
+        List<Post> allPosts = postService.getAllPosts();
 
         Page<Post> postPage = getPage(allPosts, pageNumber, size);
 
+        model.addAttribute("newPost", new Post());
         model.addAttribute("postPage", postPage);
 
         return "home";
     }
 
-    private Page<Post> getPage(List<Post> content, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), content.size());
+    private Page<Post> getPage(List<Post> allPosts, int pageNumber, int pageSize) {
+        int fromIndex = pageNumber * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, allPosts.size());
 
-        return new PageImpl<>(content.subList(start, end), pageable, content.size());
+        List<Post> content = new ArrayList<>();
+
+        if (fromIndex <= toIndex) {
+            content = allPosts.subList(fromIndex, toIndex);
+        }
+
+        return new PageImpl<>(content, PageRequest.of(pageNumber, pageSize), allPosts.size());
     }
+
 }
