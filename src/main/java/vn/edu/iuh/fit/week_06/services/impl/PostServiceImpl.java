@@ -70,4 +70,9 @@ public class PostServiceImpl implements PostService {
         Post savedPost = postRepository.save(existingPost);
         return Optional.of(savedPost) ;
     }
+
+    @Override
+    public List<Post> getPostsByAuthor(String authorEmail) {
+        return postRepository.findAllByAuthor_Email(authorEmail);
+    }
 }

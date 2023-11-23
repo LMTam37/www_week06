@@ -22,4 +22,6 @@ public interface PostService {
     public PostComment addComment(Post post, PostComment postComment);
 
     Optional<Post> updatePost(Long postId, Post post);
+
+    List<Post> getPostsByAuthor(String authorEmail);
 }

@@ -26,12 +26,12 @@ public class SecurityConfiguration {
     public UserDetailsService userDetailsService() {
         User.UserBuilder users = User.withDefaultPasswordEncoder();
         UserDetails user = users
-                .username("user")
+                .username("user@gmail.com")
                 .password("1")
                 .roles("USER")
                 .build();
         UserDetails admin = users
-                .username("user2")
+                .username("user2@gmail.com")
                 .password("1")
                 .roles("USER")
                 .build();
@@ -41,7 +41,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/**").permitAll())
+                        .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults())
                 .logout(Customizer.withDefaults());
         return httpSecurity.build();
