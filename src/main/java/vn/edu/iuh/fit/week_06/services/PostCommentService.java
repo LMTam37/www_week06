@@ -10,4 +10,6 @@ public interface PostCommentService {
     Optional<PostComment> getPostCommentById(Long postCommentId);
     PostComment savePostComment(PostComment postComment);
     void deletePostComment(Long postCommentId);
+
+    List<PostComment> findByPostIdWithChildComments(Long postId, Long parrentPostCommentId);
 }

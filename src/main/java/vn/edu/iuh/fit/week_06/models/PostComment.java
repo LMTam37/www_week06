@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "PostComment")
@@ -23,8 +24,12 @@ public class PostComment {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Column(name = "parent_id")
-    private Long parentId;
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private PostComment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<PostComment> childComments;
 
     private String title;
     private boolean published;
@@ -37,4 +42,8 @@ public class PostComment {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }

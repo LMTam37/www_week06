@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Detail</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h1 class="card-title" th:text="${post.title}"></h1>
+            <p class="card-text" th:text="${post.content}"></p>
+            <p class="card-text">Author: <a th:href="@{/authorPage/{authorEmail}(authorEmail=${post.author.email})}"
+                                            th:text="${post.author.firstName} + ' ' + ${post.author.lastName}"></a></p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h3 class="card-title">Comments</h3>
+            <div th:each="comment : ${comments}" class="mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${comment.title}"></h5>
+                        <p class="card-text" th:text="${comment.content}"></p>
+                        <p class="card-text">User: <a
+                                th:href="@{/authorPage/{userEmail}(userEmail=${comment.user.email})}"
+                                th:text="${comment.user.firstName} + ' ' + ${comment.user.lastName}"></a></p>
+
+                        <button type="button" class="btn btn-secondary"
+                                data-toggle="collapse"
+                                th:data-target="'#replyForm' + ${comment.id}"
+                                aria-expanded="false"
+                                aria-controls="'#replyForm' + ${comment.id}"
+                                th:data-commentid="${comment.id}"
+                                th:data-username="${comment.user.firstName}"
+                                th:data-parentid="${comment.id}"
+                        th:onclick="'setParentCommentId(' + ${comment.id} + ')'" >
+                        Reply
+                        </button>
+
+                        <div th:if="${comment.childComments.size() > 0}">
+                            <h5>Replies:</h5>
+                            <div th:each="childComment : ${comment.childComments}">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title" th:text="${childComment.title}"></h6>
+                                        <p class="card-text" th:text="${childComment.content}"></p>
+                                        <p class="card-text">User: <a
+                                                th:href="@{/authorPage/{userEmail}(userEmail=${childComment.user.email})}"
+                                                th:text="${childComment.user.firstName} + ' ' + ${childComment.user.lastName}"></a></p>
+
+                                        <button type="button" class="btn btn-secondary"
+                                                data-toggle="collapse"
+                                                th:data-target="'#replyForm' + ${comment.id}"
+                                                aria-expanded="false"
+                                                aria-controls="'#replyForm' + ${comment.id}"
+                                                th:data-commentid="${comment.id}"
+                                                th:data-username="${comment.user.firstName}"
+                                                th:data-parentid="${comment.id}"
+                                                th:onclick="'setParentCommentId(' + ${comment.id} + ')'" >
+                                            Reply
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:id="'replyForm' + ${comment.id}" class="collapse mt-3">
+                            <form th:action="@{/addComment}" method="post" th:object="${newComment}" class="mt-4">
+                                <h4 th:text="'Reply to: ' + ${comment.user.firstName}"></h4>
+                                <input type="hidden" th:name="postId" th:value="${post.id}"/>
+                                <input type="hidden" th:name="userId" th:value="${user.id}"/>
+                                <input type="hidden" th:id="'parentCommentId' + ${comment.id}" name="parentCommentId" th:value="${comment.id}" />
+                                <div class="form-group">
+                                    <label for="commentChildTitle">Title:</label>
+                                    <input type="text" class="form-control" id="commentChildTitle" th:field="*{title}"/>
+                                </div>
+                                <div class="form-group">
+                                    <label for="commentChildContent">Content:</label>
+                                    <textarea class="form-control" id="commentChildContent" th:field="*{content}"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form th:action="@{/addComment}" method="post" th:object="${newComment}" class="mt-4">
+                <h4>Add Comment</h4>
+                <input type="hidden" th:name="postId" th:value="${post.id}"/>
+                <input type="hidden" th:name="userId" th:value="${user.id}"/>
+                <div class="form-group">
+                    <label for="commentTitle">Title:</label>
+                    <input type="text" class="form-control" id="commentTitle" th:field="*{title}"/>
+                </div>
+                <div class="form-group">
+                    <label for="commentContent">Content:</label>
+                    <textarea class="form-control" id="commentContent" th:field="*{content}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+        </div>
+    </div>
+
+    <a href="/home" class="btn btn-primary mt-4">Back to Home</a>
+
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var replyButtons = document.querySelectorAll('[data-commentid]');
+        replyButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var commentId = button.getAttribute('data-commentid');
+                var username = button.getAttribute('data-username');
+                var parentId = button.getAttribute('data-parentid');
+
+                toggleReplyForm(commentId, username, parentId);
+            });
+        });
+    });
+
+    function toggleReplyForm(commentId, repliedToUser, parentId) {
+        var replyForm = document.getElementById('replyForm' + commentId);
+        var replyFormTitle = replyForm.querySelector('h4 span');
+
+        replyFormTitle.textContent = repliedToUser;
+        document.getElementById('parentCommentId').value = parentId;
+
+        replyForm.classList.toggle('show');
+    }
+</script>
+
+
+</body>
+</html>

@@ -34,4 +34,9 @@ public class PostCommentServiceImpl implements PostCommentService {
     public void deletePostComment(Long postCommentId) {
         postCommentRepository.deleteById(postCommentId);
     }
+
+    @Override
+    public List<PostComment> findByPostIdWithChildComments(Long postId, Long parrentPostCommentId) {
+        return postCommentRepository.findByPost_IdAndParentComment_Id(postId, parrentPostCommentId);
+    }
 }

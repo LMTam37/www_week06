@@ -21,6 +21,7 @@
                 <p class="card-text" th:text="${post.content}"></p>
                 <a th:href="@{/authorPage/{authorId}(authorId=${post.author.email})}" class="btn btn-info">View
                     Author</a>
+                <a th:href="@{/post/{postId}(postId=${post.id})}" class="btn btn-primary">View Post</a>
             </div>
         </div>
     </div>
