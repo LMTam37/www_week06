@@ -7,13 +7,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import vn.edu.iuh.fit.week_06.models.Post;
+import vn.edu.iuh.fit.week_06.models.User;
+import vn.edu.iuh.fit.week_06.repositories.UserRepository;
 import vn.edu.iuh.fit.week_06.services.PostService;
 
+import java.security.Principal;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -21,10 +22,12 @@ import java.util.List;
 public class HomeController {
 
     private final PostService postService;
+    private final UserRepository userRepository;
 
     @Autowired
-    public HomeController(PostService postService) {
+    public HomeController(PostService postService, UserRepository userRepository) {
         this.postService = postService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -39,6 +42,16 @@ public class HomeController {
         model.addAttribute("postPage", postPage);
         model.addAttribute("newPost", new Post());
         return "home";
+    }
+
+    @PostMapping("/addPost")
+    public String addPost(@ModelAttribute("newPost") Post newPost, Principal principal) {
+        String userEmail = principal.getName();
+        User currentUser = userRepository.findByEmail(userEmail).get();
+        newPost.setAuthor(currentUser);
+        newPost.setCreatedAt(new Date(System.currentTimeMillis()));
+        postService.savePost(newPost);
+        return "redirect:/home";
     }
 
     @GetMapping("/page/{pageNumber}")
